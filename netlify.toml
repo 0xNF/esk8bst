@@ -10,14 +10,14 @@ ID = "ESK8BST"
   # This is the directory that you are publishing from (relative to root of your repo)
   publish = "src/client/build"
   # This will be your default build command
-  command = "npm run build"
+  command = "npm run build-netlify"
   # This is where we will look for your lambda functions
   # functions = "project/functions/" # No lambda functions for this project
 
 # Production context: All deploys from the Production branch set in your site's deploy settings will inherit these settings.
 [context.production]
   publish = "src/client/build"
-  command = "npm run build"
+  command = "npm run build-netlify"
   environment = { ACCESS_TOKEN = "super secret", NODE_ENV = "8.0.1" }
 
 # Deploy Preview context: All Deploy Previews (https://www.netlify.com/blog/2016/07/20/introducing-deploy-previews-in-netlify/)
