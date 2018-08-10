@@ -1,0 +1,159 @@
+.App {
+  text-align: center;
+  height: 100%;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.App-header {
+  background-color: #222;
+  /* height: 150px; */
+  /* padding: 20px; */
+  color: white;
+}
+
+.App-footer {
+  background-color: #222;
+  padding: 20px;
+  color: white;
+}
+
+.App-body {
+  background-color: #333333;
+  color: white;
+}
+
+.App-title {
+  font-size: 1.5em;
+}
+
+.App-intro {
+  font-size: large;
+}
+
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.flex-grid {
+  display: flex;
+}
+.col {
+  flex: 1;
+}
+
+.colSelect {
+  text-align: left;
+}
+
+.colLabel {
+  text-align: right;
+}
+
+.socialPanel {
+  text-align: right;
+}
+
+.socialIcon {
+  margin-left: 25px;
+}
+.socialIcon:hover {
+  fill: #61DAFB;
+}
+
+
+.App-subtitle{
+  font-size: 12px;
+}
+
+.BSTMeta {
+  
+}
+
+.BSTComment {
+  background: #333333;
+  border-color: #61DAFB;
+  border-style: Solid;
+  border-width: 1px;
+  margin: 10px 0px 10px 0px;
+  padding: 5px;
+}
+.BSTCommentMeta {
+  color: #ADADAD;
+}
+
+.BSTCommentMeta2{
+  text-align: right;
+}
+
+.BSTZone {
+  background: #1E1E1E;
+  padding: 10px 15%;
+}
+
+.titleLink {
+  color: white;
+  text-decoration: none;
+}
+
+.titleLink:hover{
+  text-decoration: underline;
+}
+
+.inlineLink {
+  color: #5F9DD2;
+  text-decoration: underline;
+}
+.inlineLink:hover{
+  text-decoration: none;
+}
+
+@media (min-width : 320px) and (max-width : 686px) {
+  .FilterZone {
+    width: 50%;
+    margin: 25px auto;
+    /* background:red */
+  }  
+}
+
+@media (min-width : 687px) and (max-width : 767px) {
+  .FilterZone {
+    width: 70%;
+    margin: 25px auto;
+    /* background:green */
+  }  
+}
+
+@media only screen and (min-width : 768px) and (max-width : 1024px) {
+  .FilterZone {
+    width: 70%;
+    margin: 25px auto;
+    /* background: blue; */
+  }  
+}
+
+@media only screen and (min-width : 1025px) {
+  .FilterZone {
+    width: 100%;
+    margin: 25px auto;
+  }  
+}
+
+
+.AboutZone {
+  /* background: #1E1E1E; */
+  padding: 10px 15%;
+  text-align: left;
+}
+
+
+
+
+.filterflex {
+
+}
+
