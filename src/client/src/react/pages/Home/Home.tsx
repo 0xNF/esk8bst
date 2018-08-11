@@ -212,8 +212,8 @@ class Home extends React.Component<AppProps, AppState> {
       return;
     }
     LoadedThread = t;
-    const sf: SortFilter = makeSortFilter(ParseQueryString(this.props.location.search), this.state.Companies)
-    this.setState({Thread:this.filter(sf), IsLoading: false, IsError: false}); 
+    // const sf: SortFilter = makeSortFilter(ParseQueryString(this.props.location.search), this.state.Companies)
+    this.setState({Thread:this.filter(this.state.SortFilter), IsLoading: false, IsError: false}); 
   } 
 
 
@@ -228,14 +228,18 @@ class Home extends React.Component<AppProps, AppState> {
       // console.log(sortFilter);
       if((sortFilter.Company.indexOf("any") == -1)) { 
 
-        if(sortFilter.Company.indexOf("other / unknown") != -1) {
-          if(value.Company !== "?") {
-            // Item failed match the unknown/orginal special category
-            return false;
-          }
-        } else if(sortFilter.Company.indexOf(value.Company.toLocaleLowerCase()) == -1) {
+        if( 
+          sortFilter.Company.indexOf(value.Company.toLocaleLowerCase()) == -1 
+          && (sortFilter.Company.indexOf("other / unknown") != -1 && value.Company !== '?')
+        ) {
           return false;
         }
+        // else if(sortFilter.Company.indexOf("other / unknown") != -1) {
+        //   if(value.Company !== "?") {
+        //     // Item failed match the unknown/orginal special category
+        //     return false;
+        //   }
+        // }  
       }
 
       // checking BST
