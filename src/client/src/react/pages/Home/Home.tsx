@@ -19,7 +19,7 @@ import { FindBuySellTradeThread } from 'src/services/FindThread';
 import { ParseQueryString, UpdateURL } from 'src/services/WindowServices';
 
 // Auto Fetch
-let fetchTimerId: NodeJS.Timer | null; 
+let fetchTimerId: number | null; 
 function StartRefresh(Home: Home){
   const f = async () => {
     console.log("Auto Fetching Thread");
@@ -32,7 +32,7 @@ function StartRefresh(Home: Home){
       Home.UpdateLoadedThread(thread);
     }
   }
-  fetchTimerId = setInterval(f, 1000 * 60); // fetch once a minute
+  fetchTimerId = window.setInterval(f, 1000 * 60); // fetch once a minute
 }
 
 function StopRefresh(){
