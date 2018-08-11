@@ -17,6 +17,7 @@ import { SortFilter, DefaultSortFilter } from 'src/models/sortfilter';
 import { FilterZone } from 'src/react/components/FilterZone/FIlterZone';
 import { FindBuySellTradeThread } from 'src/services/FindThread';
 import { ParseQueryString, UpdateURL } from 'src/services/WindowServices';
+import { SelectType } from 'src/models/selectTypes';
 
 // Auto Fetch
 let fetchTimerId: number | null; 
@@ -95,21 +96,28 @@ function makeSortFilter(m: Map<string, string>, companies: Array<Company>): Sort
     ){
       sf.Field = v;
     }
- }
+  } 
 
  if(m.has("company")) {
-   let v: string = m.get("company")!;
-   if(v === "any") {
-     sf.Company = "any"
-   } else if (v === "diy (amateur)" || v === "diy%20(amateur)") {
-     sf.Company = "DIY (amateur)";
-   } else {
-      v = v.toLocaleLowerCase();
-      var mm = companies.map(x => x.company.toLocaleLowerCase());     
-      if(mm.indexOf(v) >= 0){
-        sf.Company = v;
+   let v: string = m.get("company")!; //comma separated
+   sf.Company = [];
+   const compArr: string[] = [];
+   const companySplits: string[] = v.split(',');
+   for(let i = 0; i < companySplits.length; i++) {
+      let company: string = companySplits[i].toLocaleLowerCase();
+      if( 
+        (company === "any" || company === "diy (amateur)" || company === "diy%20(amateur)") 
+        && !(company in compArr)) {
+          compArr.push(company);
+      } 
+      else {
+        var mm = companies.map(x => x.company.toLocaleLowerCase());     
+        if(mm.indexOf(company) >= 0 && !(company in compArr)){
+          compArr.push(company);
+        }
       }
    }
+   sf.Company = compArr;
   }
  if(m.has("bst")) {
    const v: string = m.get("bst")!;
@@ -206,8 +214,7 @@ class Home extends React.Component<AppProps, AppState> {
     LoadedThread = t;
     const sf: SortFilter = makeSortFilter(ParseQueryString(this.props.location.search), this.state.Companies)
     this.setState({Thread:this.filter(sf), IsLoading: false, IsError: false}); 
-  }
-  
+  } 
 
 
   private filter(sortFilter: SortFilter): IBSTThread {
@@ -218,13 +225,15 @@ class Home extends React.Component<AppProps, AppState> {
 
     function filter(value: IBSTThreadComment): boolean {
       // checking company
-      if(sortFilter.Company !== 'any') { 
-        if(sortFilter.Company === "other / unknown") {
+      // console.log(sortFilter);
+      if((sortFilter.Company.indexOf("any") == -1)) { 
+
+        if(sortFilter.Company.indexOf("other / unknown") != -1) {
           if(value.Company !== "?") {
             // Item failed match the unknown/orginal special category
             return false;
           }
-        } else if(sortFilter.Company !== value.Company.toLocaleLowerCase()) {
+        } else if(sortFilter.Company.indexOf(value.Company.toLocaleLowerCase()) == -1) {
           return false;
         }
       }
@@ -329,17 +338,23 @@ class Home extends React.Component<AppProps, AppState> {
     this.setState({Thread: this.filter(sortFilter), SortFilter: sortFilter});
   }
 
-  private OnCompanyChange(val: string) {
-    val = val.toLocaleLowerCase();
+  private OnCompanyChange(val: SelectType[]) {
+    console.log(val);
+    const newCompanies: string[] = [];
+    for(let i = 0; i < val.length; i++) {
+      const st:SelectType = val[i];
+      const value = st.value.toLocaleLowerCase();
+      newCompanies.push(value);
+    }
     if(this.state.Thread && this.state.OriginalThread) { 
       const newSortFilter: SortFilter = {
         ...this.state.SortFilter,
-        Company: val,
-      };      
-      UpdateURL("company", val);
-      this.FilterChanged(newSortFilter);
-    }
+        Company: newCompanies,
+    };      
+    UpdateURL("company", newCompanies);
+    this.FilterChanged(newSortFilter);
   }
+}
 
   private OnOrderByChange(val: string) {
     val = val.toLocaleLowerCase();
@@ -348,7 +363,7 @@ class Home extends React.Component<AppProps, AppState> {
         ...this.state.SortFilter,
         Order: val,
       };      
-      UpdateURL("order", val);
+      UpdateURL("order", [val]);
       this.FilterChanged(newSortFilter);
     }
   }
@@ -360,7 +375,7 @@ class Home extends React.Component<AppProps, AppState> {
         ...this.state.SortFilter,
         Field: val,
       };    
-      UpdateURL("field", val);  
+      UpdateURL("field", [val]);  
       this.FilterChanged(newSortFilter);
     }
   }
@@ -372,7 +387,7 @@ class Home extends React.Component<AppProps, AppState> {
         ...this.state.SortFilter,
         BST: val,
       };      
-      UpdateURL("bst", val);
+      UpdateURL("bst", [val]);
       this.FilterChanged(newSortFilter);
     }
   }
@@ -380,7 +395,7 @@ class Home extends React.Component<AppProps, AppState> {
   private ResetFilters() {
     const newSortFilter: SortFilter = {
       BST: "bst",
-      Company: "any",
+      Company: ["any"],
       Field: "date_posted",
       Order: "down"
     };

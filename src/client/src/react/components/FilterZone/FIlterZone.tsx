@@ -2,13 +2,16 @@ import * as React from 'react';
 import { IBSTThread } from 'src/models/IBST';
 import { SortFilter } from 'src/models/sortfilter';
 import { Company } from 'src/models/company';
+import Select from 'react-select';
+import './FilterZone.css';
+import { SelectType } from 'src/models/selectTypes';
 
 interface FilterZoneProps {
     Thread? : IBSTThread;
     Sorter: SortFilter;
     Companies: Array<Company>;
     ResetFilters: () => void;
-    OnCompanyChange: (val: string) => void;
+    OnCompanyChange: (val: SelectType[]) => void;
     OnSortByFieldChange: (val: string) => void;
     OnOrderByChange: (val: string) => void;
     OnBSTChange: (val: string) => void;
@@ -16,6 +19,18 @@ interface FilterZoneProps {
 }
 
 function FilterZone(props: FilterZoneProps) {
+
+    const availableOptions = props.Companies.map((x) => {
+        const y = {'value': x.company.toLocaleLowerCase(), label: x.company };
+        return y;
+      }
+    );
+
+    const selectedOptions = props.Sorter.Company.map( (x) => {
+      const y = {'value': x, label: x };
+      return y;
+    });
+
     return (
         <div className="FilterZone">
         <div className="flex-grid filterflex">
@@ -62,18 +77,13 @@ function FilterZone(props: FilterZoneProps) {
               <label htmlFor="filterCompany">From Company</label>
             </div>
             <div className="col colSelect">
-              <select id="filterCompany" value={props.Sorter.Company} onChange={ e => props.OnCompanyChange(e.target.value)}>
-                {
-                  props.Companies.map((val: Company) => {
-                    const idkey:string = "select"+val.company;
-                    return (
-                      <option key={idkey} id={idkey} value={val.company.toLocaleLowerCase()}>
-                        {val.company}
-                      </option>
-                    );
-                  })
-                }
-              </select>
+              <Select 
+                className="selectText"
+                options={availableOptions}
+                isMulti={true}
+                onChange={ e => props.OnCompanyChange(e as SelectType[])}
+                value={selectedOptions}
+                />
             </div>
         </div>
         <div>
