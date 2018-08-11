@@ -20,6 +20,11 @@ function Log(props: LogProps) {
         </header>
 
         <div className="AboutZone">
+            <h3> 8/11/2018 </h3>
+            <ul>
+                <li>Fixed page title</li>
+            </ul> 
+
             <h3> 8/10/2018 </h3>
             Initial release of ESK8BST. Features include:
             <ul>
