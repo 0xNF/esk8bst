@@ -103,21 +103,25 @@ function makeSortFilter(m: Map<string, string>, companies: Array<Company>): Sort
    sf.Company = [];
    const compArr: string[] = [];
    const companySplits: string[] = v.split(',');
-   for(let i = 0; i < companySplits.length; i++) {
-      let company: string = companySplits[i].toLocaleLowerCase();
-      if( 
-        (company === "any" || company === "diy (amateur)" || company === "diy%20(amateur)") 
-        && !(company in compArr)) {
-          compArr.push(company);
-      } 
-      else {
-        var mm = companies.map(x => x.company.toLocaleLowerCase());     
-        if(mm.indexOf(company) >= 0 && !(company in compArr)){
-          compArr.push(company);
-        }
+   if(companySplits.indexOf('any') !== -1) {
+     sf.Company.push('any');
+   } else{
+      for(let i = 0; i < companySplits.length; i++) {
+          let company: string = companySplits[i].toLocaleLowerCase();
+          if( 
+            (company === "any" || company === "diy (amateur)" || company === "diy%20(amateur)") 
+            && !(company in compArr)) {
+              compArr.push(company);
+          } 
+          else {
+            var mm = companies.map(x => x.company.toLocaleLowerCase());     
+            if(mm.indexOf(company) >= 0 && !(company in compArr)){
+              compArr.push(company);
+            }
+          }
       }
-   }
-   sf.Company = compArr;
+      sf.Company = compArr;
+    }
   }
  if(m.has("bst")) {
    const v: string = m.get("bst")!;
@@ -226,11 +230,11 @@ class Home extends React.Component<AppProps, AppState> {
     function filter(value: IBSTThreadComment): boolean {
       // checking company
       // console.log(sortFilter);
-      if((sortFilter.Company.indexOf("any") == -1)) { 
-
+      if((sortFilter.Company.indexOf("any") == -1)) {
+        const tc: string = value.Company.toLocaleLowerCase();
         if( 
-          sortFilter.Company.indexOf(value.Company.toLocaleLowerCase()) == -1 
-          && (sortFilter.Company.indexOf("other / unknown") != -1 && value.Company !== '?')
+          sortFilter.Company.indexOf(tc) == -1           
+          // || (sortFilter.Company.indexOf("other / unknown") != -1 && value.Company !== '?')
         ) {
           return false;
         }
