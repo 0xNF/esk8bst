@@ -23,6 +23,7 @@ function Log(props: LogProps) {
             <h3> 8/11/2018 </h3>
             <ul>
                 <li>Fixed page title</li>
+                <li>Added Auto Fetch of the BST thread every 60 seconds</li>
             </ul> 
 
             <h3> 8/10/2018 </h3>
