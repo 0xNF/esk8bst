@@ -19,7 +19,7 @@ import { FindBuySellTradeThread } from 'src/services/FindThread';
 import { ParseQueryString, UpdateURL } from 'src/services/WindowServices';
 
 // Auto Fetch
-let fetchTimerId: NodeJS.Timer;
+let fetchTimerId: NodeJS.Timer | null; 
 function StartRefresh(Home: Home){
   const f = async () => {
     console.log("Auto Fetching Thread");
@@ -37,8 +37,10 @@ function StartRefresh(Home: Home){
 
 function StopRefresh(){
   console.log("Stopping Auto Thread Fetch");
-  clearInterval(fetchTimerId);
-  fetchTimerId.unref();
+  if(fetchTimerId !== null) {
+    clearInterval(fetchTimerId);
+    fetchTimerId = null;
+  }
 }
 
 async function CommonCompanies(){
@@ -199,10 +201,7 @@ class Home extends React.Component<AppProps, AppState> {
 
   public UpdateLoadedThread(t: IBSTThread) : void {
     if(t === LoadedThread) {
-      console.log("Loaded thread and returned threads were identical, not re-rendering anything.");
       return;
-    } else{
-      console.log("Loaded thread was different from returned autofetch. Changing.");
     }
     LoadedThread = t;
     const sf: SortFilter = makeSortFilter(ParseQueryString(this.props.location.search), this.state.Companies)
