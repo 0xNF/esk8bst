@@ -25,7 +25,6 @@ class VersionDisplay extends React.Component<VersionDisplayProps, VersionDisplay
     async componentDidMount() {
         try {
             const x = await FetchVersion();
-            console.log(x);
             this.setState({version: x});
         } catch (e) {
             console.log("ay wut mate");

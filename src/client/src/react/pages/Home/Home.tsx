@@ -18,6 +18,31 @@ import { FilterZone } from 'src/react/components/FilterZone/FIlterZone';
 import { FindBuySellTradeThread } from 'src/services/FindThread';
 import { ParseQueryString, UpdateURL } from 'src/services/WindowServices';
 
+// Auto Fetch
+let fetchTimerId: number | null; 
+function StartRefresh(Home: Home){
+  const f = async () => {
+    console.log("Auto Fetching Thread");
+    const thread: IBSTThread | IBSTError = await Load();
+    if("Code" in thread) {
+      // Error
+      Home.setState({Thread: null, Companies: [], IsError: true, IsLoading: false, ErrorMessage: makeForError(thread)});
+      StopRefresh();
+    } else {
+      Home.UpdateLoadedThread(thread);
+    }
+  }
+  fetchTimerId = window.setInterval(f, 1000 * 60); // fetch once a minute
+}
+
+function StopRefresh(){
+  console.log("Stopping Auto Thread Fetch");
+  if(fetchTimerId !== null) {
+    clearInterval(fetchTimerId);
+    fetchTimerId = null;
+  }
+}
+
 async function CommonCompanies(){
   let companies: Array<Company> = [];
   try {
@@ -154,16 +179,36 @@ class Home extends React.Component<AppProps, AppState> {
       if("Code" in thread) {
         // Error
         this.setState({Thread: null, Companies: [], IsError: true, IsLoading: false, ErrorMessage: makeForError(thread)});
+        StopRefresh();
       } else {
         const companies: Array<Company> = AugmentCompanies(await CommonCompanies());
-        LoadedThread = thread;     
+        StartRefresh(this);
+        LoadedThread = {
+          ...thread,
+        };
         const sf: SortFilter = makeSortFilter(ParseQueryString(this.props.location.search), companies)
         this.setState({Thread:this.filter(sf), Companies: companies, IsLoading: false, IsError: false}); // TODO testing IsLoading
       }
     } catch (e) {
       this.setState({Thread: null, Companies: [], IsError: true, IsLoading: false, ErrorMessage: "Something happened"+e});
+      StopRefresh();
     }
   }
+
+  componentWillUnmount(){
+    StopRefresh();
+  }
+
+  public UpdateLoadedThread(t: IBSTThread) : void {
+    if(t === LoadedThread) {
+      return;
+    }
+    LoadedThread = t;
+    const sf: SortFilter = makeSortFilter(ParseQueryString(this.props.location.search), this.state.Companies)
+    this.setState({Thread:this.filter(sf), IsLoading: false, IsError: false}); 
+  }
+  
+
 
   private filter(sortFilter: SortFilter): IBSTThread {
     let newThread: IBSTThread = {
@@ -438,11 +483,11 @@ class Home extends React.Component<AppProps, AppState> {
     if(this.state.IsLoading) {
       return renderLoading();
     } else if (this.state.IsError) {
+      StopRefresh();
       return renderError(this.state.ErrorMessage!);
     } else {
       return renderOk(this.state.Thread!, this.state.Companies, this.state.SortFilter);
     }   
   }
 }
-
 export { Home }
