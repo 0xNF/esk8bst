@@ -349,10 +349,20 @@ class Home extends React.Component<AppProps, AppState> {
   private OnCompanyChange(val: SelectType[]) {
     console.log(val);
     const newCompanies: string[] = [];
+    // Add all new filters
     for(let i = 0; i < val.length; i++) {
       const st:SelectType = val[i];
       const value = st.value.toLocaleLowerCase();
       newCompanies.push(value);
+    }
+    // Remove the 'any' filter, which doesnt make sense in multi-filter.
+    if(newCompanies.length > 1 && newCompanies.indexOf('any') !== -1){
+      const anyidx: number = newCompanies.indexOf('any');
+      newCompanies.splice(anyidx, 1);
+    }
+    // Unless there are no other filters, in which case it is implicitly any.
+    if(newCompanies.length == 0) {
+      newCompanies.push('any');
     }
     if(this.state.Thread && this.state.OriginalThread) { 
       const newSortFilter: SortFilter = {
