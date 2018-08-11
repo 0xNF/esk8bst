@@ -369,7 +369,12 @@ class Home extends React.Component<AppProps, AppState> {
         ...this.state.SortFilter,
         Company: newCompanies,
     };      
-    UpdateURL("company", newCompanies);
+    
+    if(newCompanies.indexOf('any') !== -1) {
+      UpdateURL("company", null);
+    } else {
+      UpdateURL("company", newCompanies);
+    }
     this.FilterChanged(newSortFilter);
   }
 }

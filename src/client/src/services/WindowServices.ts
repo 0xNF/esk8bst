@@ -45,6 +45,13 @@ function ParseQueryString(q: string | undefined): Map<string, string> {
           const qs: string = ToQueryString(x);
           newurl += qs;
         }
+        if(key !== null && val == null) {
+          // kill the key entirely
+          const x = ParseQueryString(window.location.search);
+          x.delete(key);
+          const qs: string = ToQueryString(x);
+          newurl += qs;
+        }
         window.history.replaceState({path:newurl},'',newurl);
     }
   }
