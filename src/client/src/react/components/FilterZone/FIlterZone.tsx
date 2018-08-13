@@ -47,7 +47,9 @@ function FilterZone(props: FilterZoneProps) {
                 <option value="seller">Seller</option>
                 <option value="reply_count">Reply Count</option>
             </select>
-          </div>
+          </div>            
+        </div>
+        <div className="flex-grid filterFlex">
           <div className="col colLabel">
             <label htmlFor="orderBy">Order By</label>
           </div>
@@ -57,7 +59,7 @@ function FilterZone(props: FilterZoneProps) {
               <option value="down">Descending</option>
               <option value="up">Ascending</option>
             </select>
-          </div>              
+          </div>  
         </div>
         <div className="flex-grid filterflex">
           <div className="col colLabel">  
@@ -71,32 +73,38 @@ function FilterZone(props: FilterZoneProps) {
               <option value="sell">Sell</option>
               <option value="trade">Trade</option>
             </select>
-          </div>            
-            {/* Filter on Company */}
-            <div className="col colLabel">
-              <label htmlFor="filterCompany">From Company</label>
+          </div>        
+        </div>
+        <div className="flex-grid filterflex">
+            <div className="col colLabel">  
+              {/* Filter on BTS type */}
+              <label htmlFor="filterBTS">From Company</label>
             </div>
             <div className="col colSelect">
-              <Select 
-                className="selectText"
-                options={availableOptions}
-                isMulti={true}
-                onChange={ e => props.OnCompanyChange(e as SelectType[])}
-                value={selectedOptions}
+              {/* Filter on Company
+              <div>
+                <label htmlFor="filterCompany">From Company</label>
+              </div> */}
+                <Select 
+                  className="selectText"
+                  options={availableOptions}
+                  isMulti={true}
+                  onChange={ e => props.OnCompanyChange(e as SelectType[])}
+                  value={selectedOptions}
                 />
             </div>
-        </div>
+          </div>
         <div>
-        <button onClick={props.ResetFilters}>Reset Sort/Filters</button>
-          {
-            (props.Thread && (props.Thread.BSTs.length !== props.LoadedThread.BSTs.length)) ? 
-              <div>
-                <span>Results: {props.Thread.BSTs.length} / {props.LoadedThread.BSTs.length} </span>
-              </div>
-              : 
-              ""
-            }
-        </div>
+          <button onClick={props.ResetFilters}>Reset Sort/Filters</button>
+            {
+              (props.Thread && (props.Thread.BSTs.length !== props.LoadedThread.BSTs.length)) ? 
+                <div>
+                  <span>Results: {props.Thread.BSTs.length} / {props.LoadedThread.BSTs.length} </span>
+                </div>
+                : 
+                ""
+              }
+          </div>
       </div>
     );
 }
