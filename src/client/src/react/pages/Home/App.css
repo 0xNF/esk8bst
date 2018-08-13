@@ -51,7 +51,7 @@
 }
 
 .colLabel {
-  text-align: right;
+  text-align: left;
 }
 
 .socialPanel {
@@ -112,48 +112,8 @@
   text-decoration: none;
 }
 
-@media (min-width : 320px) and (max-width : 686px) {
-  .FilterZone {
-    width: 50%;
-    margin: 25px auto;
-    /* background:red */
-  }  
-}
-
-@media (min-width : 687px) and (max-width : 767px) {
-  .FilterZone {
-    width: 70%;
-    margin: 25px auto;
-    /* background:green */
-  }  
-}
-
-@media only screen and (min-width : 768px) and (max-width : 1024px) {
-  .FilterZone {
-    width: 70%;
-    margin: 25px auto;
-    /* background: blue; */
-  }  
-}
-
-@media only screen and (min-width : 1025px) {
-  .FilterZone {
-    width: 100%;
-    margin: 25px auto;
-  }  
-}
-
-
 .AboutZone {
   /* background: #1E1E1E; */
   padding: 10px 15%;
   text-align: left;
 }
-
-
-
-
-.filterflex {
-
-}
-
