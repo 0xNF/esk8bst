@@ -15,6 +15,7 @@ interface FilterZoneProps {
     OnSortByFieldChange: (val: string) => void;
     OnOrderByChange: (val: string) => void;
     OnBSTChange: (val: string) => void;
+    OnNotifyOpen: () => void;
     LoadedThread: IBSTThread;
 }
 
@@ -81,10 +82,6 @@ function FilterZone(props: FilterZoneProps) {
               <label htmlFor="filterBTS">From Company</label>
             </div>
             <div className="col colSelect">
-              {/* Filter on Company
-              <div>
-                <label htmlFor="filterCompany">From Company</label>
-              </div> */}
                 <Select 
                   className="selectText"
                   options={availableOptions}
@@ -104,6 +101,9 @@ function FilterZone(props: FilterZoneProps) {
                 : 
                 ""
               }
+          </div>
+          <div>
+            <button onClick={props.OnNotifyOpen}>Get Notified Of Updates</button>
           </div>
       </div>
     );

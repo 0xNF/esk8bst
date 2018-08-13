@@ -18,6 +18,7 @@ import { FilterZone } from 'src/react/components/FilterZone/FIlterZone';
 import { FindBuySellTradeThread } from 'src/services/FindThread';
 import { ParseQueryString, UpdateURL } from 'src/services/WindowServices';
 import { SelectType } from 'src/models/selectTypes';
+import { NotifyModal } from '../../components/NotifyModal/NotifyModal';
 
 // Auto Fetch
 let fetchTimerId: number | null; 
@@ -165,6 +166,7 @@ interface AppState {
   IsLoading: boolean;
   ErrorMessage?: string;
   SortFilter: SortFilter;
+  ModalIsOpen: boolean;
 }
 
 interface AppProps {
@@ -182,6 +184,7 @@ class Home extends React.Component<AppProps, AppState> {
       IsLoading: true,
       IsError: false,
       SortFilter: DefaultSortFilter,
+      ModalIsOpen: false,
     };
   }
 
@@ -426,6 +429,13 @@ class Home extends React.Component<AppProps, AppState> {
     this.FilterChanged(newSortFilter);
   }
 
+  private OnNotifyOpen(){
+    this.setState({ModalIsOpen: true});
+  }
+  private OnNotifyClose() {
+    this.setState({ModalIsOpen: false});
+  }
+
   public render() {
 
     const OnCompanyChange = this.OnCompanyChange.bind(this);
@@ -433,6 +443,8 @@ class Home extends React.Component<AppProps, AppState> {
     const OnSortByFieldChange = this.OnSortByFieldChange.bind(this);
     const OnBSTChange = this.OnBSTChange.bind(this);
     const ResetFilters = this.ResetFilters.bind(this);
+    const OnNotifyOpen = this.OnNotifyOpen.bind(this);
+    const OnNotifyClose = this.OnNotifyClose.bind(this);
 
     function renderLoading() {
       return (
@@ -447,6 +459,7 @@ class Home extends React.Component<AppProps, AppState> {
             Sorter={DefaultSortFilter}
             Companies={[]}
             ResetFilters={ResetFilters}
+            OnNotifyOpen={() => {}}
             />
 
           <div className="BSTZone">
@@ -472,6 +485,7 @@ class Home extends React.Component<AppProps, AppState> {
               Sorter={DefaultSortFilter}
               Companies={[]}
               ResetFilters={ResetFilters}
+              OnNotifyOpen={() => {}}
               />
   
             <div className="BSTZone" dangerouslySetInnerHTML={{__html: err}}>
@@ -483,11 +497,11 @@ class Home extends React.Component<AppProps, AppState> {
       );
     }
 
-    function renderOk(thread: IBSTThread, companies: Array<Company>, sorter: SortFilter) {
+    function renderOk(state: AppState) {
       return (
         <div className="App App-body">
 
-          <BSTHeader thread={thread}/>
+          <BSTHeader thread={state.Thread!}/>
 
           <FilterZone 
             OnCompanyChange={OnCompanyChange} 
@@ -495,16 +509,18 @@ class Home extends React.Component<AppProps, AppState> {
             OnSortByFieldChange={OnSortByFieldChange}
             OnBSTChange={OnBSTChange}
             LoadedThread={LoadedThread}
-            Thread={thread}
-            Sorter={sorter}
-            Companies={companies}
+            Thread={state.Thread!}
+            Sorter={state.SortFilter}
+            Companies={state.Companies}
             ResetFilters={ResetFilters}
+            OnNotifyOpen={OnNotifyOpen}
             />
   
+          <NotifyModal IsOpen={state.ModalIsOpen} OnAfterOpen={() => {}} OnCloseModal={OnNotifyClose} Companies={state.Companies}/>
 
           <div className="BSTZone">
             {
-              thread.BSTs.map((v: IBSTThreadComment) => {
+              state.Thread!.BSTs.map((v: IBSTThreadComment) => {
                 const idkey: string = "bstComment_"+v.Seller+"_"+Number(v.DatePosted);
                 return (
                   <BSTComment key={idkey} comment={v}/>
@@ -524,7 +540,7 @@ class Home extends React.Component<AppProps, AppState> {
       StopRefresh();
       return renderError(this.state.ErrorMessage!);
     } else {
-      return renderOk(this.state.Thread!, this.state.Companies, this.state.SortFilter);
+      return renderOk(this.state);
     }   
   }
 }
