@@ -18,6 +18,7 @@ interface NotifyModalState {
     currency: string;
     companyOptions: SelectType[];
     selectedOptions: SelectType[];
+    showUnsubscribe: boolean;
 }
 
 const customStyles = {
@@ -57,6 +58,7 @@ class NotifyModal extends React.Component<NotifyModalProps, NotifyModalState> {
             email: "",
             companyOptions: availableOptions,
             selectedOptions: [anyObj],
+            showUnsubscribe: false,
         };
     }
 
@@ -84,7 +86,7 @@ class NotifyModal extends React.Component<NotifyModalProps, NotifyModalState> {
         }
     }
 
-    private checkInputs(){
+    private checkInputsForSubscribe(){
 
         if(this.state.email === "" || this.state.email.indexOf("@") == -1 || this.state.email.length < 3) {
             // TODO email is invalid, raise flag
@@ -94,6 +96,10 @@ class NotifyModal extends React.Component<NotifyModalProps, NotifyModalState> {
             // everything's good, let's send a thing to Firebase
             // TODO send to Firebase
         }
+    }
+
+    private checkInputsForUnsubscribe(){
+
     }
 
     private OnCompanyChange(val: SelectType[]) {
@@ -117,6 +123,14 @@ class NotifyModal extends React.Component<NotifyModalProps, NotifyModalState> {
         this.setState({selectedOptions: newCompanies});
     }
 
+    private OnSubUnSubChanged(val: any) {
+        if(val){
+            const showunsub: boolean = val.target.value === "unsubscribe";
+            console.log(showunsub);
+            this.setState({showUnsubscribe: showunsub});
+        }
+    }
+
 
     public render() {
         return (
@@ -128,38 +142,62 @@ class NotifyModal extends React.Component<NotifyModalProps, NotifyModalState> {
                 contentLabel="Example Modal"        
             >
                 <div id="modalContent">
-                    <p>
-                        Get notified of when new boards that match your criteria are posted.<br/>
-                        We'll send you an email whenever something new comes up. <br/>
-                        If you already submitted your email, you can unsubscribe below, or you can use the link in the email.
-                    </p>
-                    <form>
-                        <label htmlFor="fromCompany">From Company</label>
-                        <Select id="fromCompany" isMulti={true} options={this.state.companyOptions} onChange={ e => this.OnCompanyChange(e as SelectType[])}  value={this.state.selectedOptions}/>
-                        <label htmlFor="maxPrice">Price </label>
-                        <div>
-                            <input id="maxPrice" type="number" placeholder="600" onInputCapture={this.updatePrice.bind(this)}/> 
-                            <span className="validity"></span>
-                        </div>
-                        <label htmlFor="currencyChoice">Currency</label>
-                        <div>
-                            <select id="currencyChoice" defaultValue="USD" required={true} onChange={(x: any) => this.OnCurrencyChange(x.target.value)}>
-                                <option value="USD">USD ($)</option>
-                                <option value="CAD">CAD ($)</option>
-                                <option value="AUD">AUD ($)</option>
-                                <option value="GBP">GBP (£)</option>
-                                <option value="GBP">EUR (€)</option>
-                            </select>
-                        </div>
+                    <div>
+                        <label htmlFor="subscribe">Subscribe</label>
+                        <input id="subscribe" type="radio" name="sunsunsub" value="subscribe" defaultChecked={!this.state.showUnsubscribe} onChange={this.OnSubUnSubChanged.bind(this)}/>
+                        <label htmlFor="unsubscribe">Unsubscribe</label>
+                        <input id="unsubscribe" type="radio" name="sunsunsub" value="unsubscribe" defaultChecked={this.state.showUnsubscribe} onChange={this.OnSubUnSubChanged.bind(this)}/>
+                    </div>
 
-                        <label htmlFor="yourEmail">Email</label>
-                        <div>
-                            <input id="yourEmail" required={true} type="email" placeholder="boards@ebay.com" minLength={3} min="3" onInputCapture={this.updateEmail.bind(this)}/> 
-                            <span className="validity"></span>
+                    {!this.state.showUnsubscribe ? 
+                        <div className="subscribeZone">
+                            <p>
+                                Get notified of when new boards that match your criteria are posted.<br/>
+                                We'll send you an email whenever something new comes up. <br/>
+                                If you already submitted your email, you can unsubscribe below, or you can use the link in the email.
+                            </p>
+                            <form>
+                                <label htmlFor="fromCompany">From Company</label>
+                                <Select id="fromCompany" isMulti={true} options={this.state.companyOptions} onChange={ e => this.OnCompanyChange(e as SelectType[])}  value={this.state.selectedOptions}/>
+                                <label htmlFor="maxPrice">Price </label>
+                                <div>
+                                    <input id="maxPrice" type="number" placeholder="600" onInputCapture={this.updatePrice.bind(this)}/> 
+                                    <span className="validity"></span>
+                                </div>
+                                <label htmlFor="currencyChoice">Currency</label>
+                                <div>
+                                    <select id="currencyChoice" defaultValue="USD" required={true} onChange={(x: any) => this.OnCurrencyChange(x.target.value)}>
+                                        <option value="USD">USD ($)</option>
+                                        <option value="CAD">CAD ($)</option>
+                                        <option value="AUD">AUD ($)</option>
+                                        <option value="GBP">GBP (£)</option>
+                                        <option value="GBP">EUR (€)</option>
+                                    </select>
+                                </div>
+
+                                <label htmlFor="yourEmail">Email</label>
+                                <div>
+                                    <input id="yourEmail" required={true} type="email" placeholder="boards@ebay.com" minLength={3} min="3" onInputCapture={this.updateEmail.bind(this)}/> 
+                                    <span className="validity"></span>
+                                </div>
+                                <button onClick={this.checkInputsForSubscribe.bind(this)} type="button">Submit</button>
+                                <button onClick={this.props.OnCloseModal} type="button">Cancel</button>
+                            </form>
                         </div>
-                        <button onClick={this.checkInputs.bind(this)} type="button">Submit</button>
-                        <button onClick={this.props.OnCloseModal} type="button">Cancel</button>
-                    </form>
+                        :
+                        <div className="unsubscribeZone">
+                            <form>
+                                <label htmlFor="yourEmail">Email</label>
+                                <div>
+                                    <input id="yourEmail" required={true} type="email" placeholder="boards@ebay.com" minLength={3} min="3" onInputCapture={this.updateEmail.bind(this)}/> 
+                                    <span className="validity"></span>
+                                </div>
+                                <button onClick={this.checkInputsForUnsubscribe.bind(this)} type="button">Unsubscribe</button>
+                                <button onClick={this.props.OnCloseModal} type="button">Cancel</button>
+                            </form>
+                        </div>
+                    }
+                    
                 </div>
             </Modal>
         );

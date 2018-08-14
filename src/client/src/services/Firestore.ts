@@ -1,6 +1,6 @@
 import * as Firebase from 'firebase';
 import { firestore } from 'firebase';
-import { FirebaseMatch } from 'src/models/emailuser';
+import { FirebaseMatch } from 'src/models/dbTypes';
 
 let db: firestore.Firestore;
 
@@ -38,8 +38,7 @@ function tadd(test: boolean = false, ownerid: Firebase.User | null){
   if(test && ownerid && ownerid.uid){
     console.log("can add");
     const d2: FirebaseMatch  = {
-      owner: ownerid.uid,      
-      email: "nf@gmail.com",
+      owner: "nf@gmail.com",
       matches: [
         {
           currency: "usd",
@@ -64,11 +63,9 @@ function getAdd(){
   db.collection("matches").get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
           const d: FirebaseMatch = doc.data() as FirebaseMatch;
-          const e = d.email;
           const i = d.owner;
           const ms = d.matches;
           console.log(`${doc.id}`);
-          console.log(e);
           console.log(i);
           console.log(ms);
       });
