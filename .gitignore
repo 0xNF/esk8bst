@@ -109,3 +109,4 @@ msbuild.wrn
 .vs/FirebaseServiceAccountKey.json
 .vs/
 FirebaseServiceAccountKey.json
+src/esk8lambda/esk8lambda/FirebaseServiceAccountKey.json
