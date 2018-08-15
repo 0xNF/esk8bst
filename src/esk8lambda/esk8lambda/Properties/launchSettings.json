@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "esk8lambda": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "FirebaseServiceAccountKey.json"
+      }
+    }
+  }
+}
