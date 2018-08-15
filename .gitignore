@@ -108,3 +108,4 @@ msbuild.wrn
 # Visual Studio 2015
 .vs/FirebaseServiceAccountKey.json
 .vs/
+FirebaseServiceAccountKey.json
