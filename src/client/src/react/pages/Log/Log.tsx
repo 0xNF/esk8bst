@@ -20,6 +20,13 @@ function Log(props: LogProps) {
         </header>
 
         <div className="AboutZone">
+
+            <h3> 8/16/2018 </h3>
+            <ul>
+                <li>Added Email Notification. Click on the 'Get Notified of Updates' button the main page to get started.</li>
+                <li>Added multi-select when filtering for boards</li>
+            </ul>
+
             <h3> 8/11/2018 </h3>
             <ul>
                 <li>Fixed page title</li>
