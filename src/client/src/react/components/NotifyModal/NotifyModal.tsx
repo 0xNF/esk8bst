@@ -4,7 +4,7 @@ import * as Modal from 'react-modal';
 import Select from 'react-select';
 import { Company } from 'src/models/company';
 import { SelectType } from 'src/models/selectTypes';
-import { Subscriber } from 'src/models/Subscriber';
+import { Subscriber } from 'src/models/subscriber';
 import { Match } from "src/models/Match";
 import { BuySellTrade } from 'src/types/BuySellTrade';
 import { SubmitSubscriber, UnsubscribeEmail } from 'src/services/LambdaService';
