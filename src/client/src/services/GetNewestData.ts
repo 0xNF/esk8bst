@@ -1,7 +1,8 @@
 import { IRedditData } from "src/models/reddit";
 import { Company } from "src/models/company";
 import { Board } from "src/models/board";
-import { BuySellTrade, TransactionStatus } from "src/types/TransactionStatus";
+import { TransactionStatus } from "src/types/TransactionStatus";
+import { BuySellTrade } from "src/types/BuySellTrade";
 import { IBSTThreadMetadata, IBSTThreadComment, IBSTThread } from "src/models/IBST";
 import { IBSTError } from "../models/BSTErrors";
 

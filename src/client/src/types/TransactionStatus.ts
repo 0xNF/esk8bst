@@ -1,10 +1,3 @@
-type BuySellTrade =
-    | "BUY"
-    | "SELL"
-    | "TRADE"
-    | "NULL"
-    ;
-
 type TransactionStatus = 
     | "IN-PROGRESS"
     | "OPEN"
@@ -14,4 +7,4 @@ type TransactionStatus =
     ;
 
 
-export { BuySellTrade, TransactionStatus }
+export { TransactionStatus }

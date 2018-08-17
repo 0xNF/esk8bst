@@ -1,4 +1,5 @@
-import { BuySellTrade, TransactionStatus } from "src/types/TransactionStatus";
+import { TransactionStatus } from "src/types/TransactionStatus";
+import { BuySellTrade } from "src/types/BuySellTrade";
 
 interface IBSTThreadMetadata {
     TotalPosts: number;
