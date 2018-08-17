@@ -1,0 +1,65 @@
+[
+    {
+        "email": "BoostedMeepo@SELL1000.com",
+        "matches": [
+            {
+                "companies": ["boosted", "meepo", "wowgo", "evolve"],
+                "currency": "USD",
+                "bst": "SELL",
+                "price": 1000
+            }
+        ]
+    },
+    {
+        "email": "ANY@PURCHASE.com",
+        "matches": [
+            {
+                "companies": [],
+                "currency": "USD",
+                "bst": "BUY",
+                "price": 1000
+            }
+        ]
+    },
+    {
+        "email": "Literally@Everything.com",
+        "matches": [
+            {
+                "companies": [],
+                "currency": "USD",
+                "bst": "BST"
+            }
+        ]
+    },
+    {
+        "email": "OnlyTrades@whoknows.com",
+        "matches": [
+            {
+                "companies": ["DIY"],
+                "currency": "USD",
+                "bst": "TRADE"
+            }
+        ]
+    },
+    {
+        "email": "BuyUnknown@whoknows.com",
+        "matches": [
+            {
+                "companies": ["other / unknown"],
+                "currency": "USD",
+                "bst": "SELL"
+            }
+        ]
+    },
+    {
+        "email": "SellingaBackfire@whoknows.com",
+        "matches": [
+            {
+                "companies": ["backfire"],
+                "currency": "USD",
+                "bst": "BUY"
+            }
+        ]
+    }
+    
+]

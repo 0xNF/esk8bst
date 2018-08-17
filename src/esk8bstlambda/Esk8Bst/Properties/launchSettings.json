@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Esk8Bst": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "FirebaseServiceAccountKey.json",
+        "MAILGUN_API_KEY": "xxx",
+        "MAILGUN_DOMAIN_KEY": "mg.esk8bst.com"
+      }
+    }
+  }
+}
