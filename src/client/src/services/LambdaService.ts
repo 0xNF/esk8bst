@@ -1,4 +1,4 @@
-import { Subscriber } from "src/models/Subscriber";
+import { Subscriber } from "src/models/subscriber";
 
 const subscribeEndoint: string = "https://1lol87xzbj.execute-api.us-east-2.amazonaws.com/Prod/subscribe"//"https://lambda.esk8bst.com/subscribe";
 const unsubscribeEndoint: string = "https://1lol87xzbj.execute-api.us-east-2.amazonaws.com/Prod/subscribe?confirmkey=";//"https://lambda.esk8bst.com/unsubscribe";
