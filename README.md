@@ -19,6 +19,8 @@ This is a project built with TypeScript 3 and React. Shout out to Microsoft's [T
 
 # Architecture
 
+## Front End
+
 * client/
     * models/
     * react/
@@ -30,6 +32,54 @@ This is a project built with TypeScript 3 and React. Shout out to Microsoft's [T
 
 
 Most of the magic happens in the Services, specifically `Services/FindThread.ts` and `Services/GetNewestData.ts`, which contain the fetcher and the parser.
+
+## Database
+Google's Cloud Firestore is the datastore. It is structured thusly:  
+
+* Databases/  
+    * Scan/  
+    * Matches/
+
+The scan collection contains a single document with id `ScanData` structured like:
+```TypeScript
+{
+    LastScanDate: Timestamp
+}
+```
+
+The matches object contains one collection for each user, where the id is their email. Each document contains an array of Match objects, each describing one potential search query the user wants to search for over the Buy Sell Trade thread:  
+
+```TypeScript
+{
+    matches: [
+        {
+            bst: string,
+            currency: string,
+            price: number,
+            companies: [
+                string
+            ]
+        }
+    ]
+}
+```
+
+Although both the Datastore and the Lambda's support an arbitrary number of matches, the front end presently only supports one match per user.  
+
+
+## Backend 
+This project uses AWS Lambda to host 4 functions:  
+
+1. Subscribe  
+2. Confirm Subscribe  
+3. Unsubscribe  
+4. Scan  
+
+Email is quite tricky, finnicky, and dependant upon, among a hundred other things, a senders 'reputation'. One way for a sender to main good reputation is to support double opt-in. In our architecture, a user requests to be subscribed by hitting the `Subscribe` endpoint, the first Lambda sends a confirmation email to the user, the user clicks a link that email which pings the `Confirm Subscribe` endpoint, and the second lambda registers their email.
+
+`Unsubscribe` is another lambda function, which starts when a user hits the unsubscribe endpoint. This removed their email from Firestore.
+
+And finally, the `Scan` lambda does the hard work of fetching subscribers, fetching the reddit thread, parsing into machine readable formats, determining if any user had any matching new posts, and sending out daily emails. This Lambda is only triggerable by a scheduled cronjob from AWS every hour. It is not available via any HTTP endpoint.
 
 # Known Bugs
 * Tracking-Protection Enabled browsers will refuse to load the reddit json. 
