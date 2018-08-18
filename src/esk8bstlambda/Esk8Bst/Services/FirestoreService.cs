@@ -217,7 +217,7 @@ namespace Esk8Bst.Services {
                 DocumentReference doc = DBHandle.Collection(PRECONFIRMED).Document(hashed);
                 await DBHandle.RunTransactionAsync(async transaction => {
                     transaction.Create(doc, new Preconfirmed());
-                });
+                });                
             }
             catch (Exception e) {
                 Logger.Log($"Some error ocurred while inserting a preconfirmed hash: {e.Message}");

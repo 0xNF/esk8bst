@@ -31,7 +31,9 @@ namespace Esk8Bst.Tests {
 
         [Fact]
         public async Task TestParseScanTime() {
-
+            FirestoreService FSS = new FirestoreService(logger);
+            ScanData sd = await FSS.GetScanData();
+            Assert.NotNull(sd);
         }
 
         [Fact]
@@ -41,5 +43,17 @@ namespace Esk8Bst.Tests {
             await FSS.InsertPreconfirmed(s);
         }
 
+        [Fact]
+        public async Task CheckIsPreconfirmed() {
+            string s = "test@test.com";
+            FirestoreService FSS = new FirestoreService(logger);
+            await FSS.InsertPreconfirmed(s);
+
+            bool isPreconfirmedFirst = await FSS.CheckIsPreconfirmed(s);
+            bool isPreconfirmedSecond = await FSS.CheckIsPreconfirmed("lol");
+
+            Assert.True(isPreconfirmedFirst);
+            Assert.False(isPreconfirmedSecond);
+        }
     }
 }
