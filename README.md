@@ -8,7 +8,6 @@ Future updates are likely to include stats on the number of boards available, as
 The site is all in-browser and doesn't require a back-end server. Reddit's API is used to collect thread information when you load the page.
 
 
-
 This is a project built with TypeScript 3 and React. Shout out to Microsoft's [TypeScript-React Starter](https://github.com/Microsoft/TypeScript-React-Starter) for making it easy to get started with TypeScript.
 
 # Building
@@ -39,7 +38,9 @@ Google's Cloud Firestore is the datastore. It is structured thusly:
 * Databases/  
     * Scan/  
     * Matches/
+    * Preconfirmed/
 
+### Scan
 The scan collection contains a single document with id `ScanData` structured like:
 ```TypeScript
 {
@@ -47,6 +48,7 @@ The scan collection contains a single document with id `ScanData` structured lik
 }
 ```
 
+### Matches
 The matches object contains one collection for each user, where the id is their email. Each document contains an array of Match objects, each describing one potential search query the user wants to search for over the Buy Sell Trade thread:  
 
 ```TypeScript
@@ -67,6 +69,20 @@ The matches object contains one collection for each user, where the id is their 
 Although both the Datastore and the Lambda's support an arbitrary number of matches, the front end presently only supports one match per user.  
 
 
+### Preconfirmed
+Stores a sha256 of each email that has previously opted-in so that additional subscription requests in the futrue, for example, to edit their match object, aren't locked behind another opt-in email.
+
+Each object is simply of the format:
+
+```TypeScript
+sha256(email)
+
+{
+    exists: true
+}
+```
+where the document id is the hash and the only field in the document is an exists field set to true. They are non-empty to avoid Firebase automatically pruning them.
+
 ## Backend 
 This project uses AWS Lambda to host 4 functions:  
 
@@ -80,6 +96,9 @@ Email is quite tricky, finnicky, and dependant upon, among a hundred other thing
 `Unsubscribe` is another lambda function, which starts when a user hits the unsubscribe endpoint. This removed their email from Firestore.
 
 And finally, the `Scan` lambda does the hard work of fetching subscribers, fetching the reddit thread, parsing into machine readable formats, determining if any user had any matching new posts, and sending out daily emails. This Lambda is only triggerable by a scheduled cronjob from AWS every hour. It is not available via any HTTP endpoint.
+
+## Email
+Email is handled with the Mailgun API.
 
 # Known Bugs
 * Tracking-Protection Enabled browsers will refuse to load the reddit json. 
