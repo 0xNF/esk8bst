@@ -87,9 +87,11 @@ namespace esk8bstlambda {
                             Body = "Alright! You've been confirmed as interested in receiving updates from https://esk8bst.com",
                         };
                     }
-
-                    string encryptionKey = Environment.GetEnvironmentVariable("ESK8BST_ENCRYPTION_KEY");
-                    confirmkey = EncryptorService.CreateConfirmKey(pso.ToJson().ToString(), encryptionKey);
+                    else {
+                        // Not pre-confirmed, send an opt-in email.
+                        string encryptionKey = Environment.GetEnvironmentVariable("ESK8BST_ENCRYPTION_KEY");
+                        confirmkey = EncryptorService.CreateConfirmKey(pso.ToJson().ToString(), encryptionKey);
+                    }
                 }
             } catch (Exception e) {
                 logger.Log($"Tried to parse a malformed subscriber json: {e.Message}");

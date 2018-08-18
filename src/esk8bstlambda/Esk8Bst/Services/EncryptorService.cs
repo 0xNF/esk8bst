@@ -27,24 +27,53 @@ namespace Esk8Bst.Services {
             return Encoding.UTF8.GetString(hashedbytes);
         }
 
+        public static string SafeBase64Encode(string text) {
+            byte[] bytes = Encoding.Unicode.GetBytes(text);
+            string b64 = Convert.ToBase64String(bytes);
+            string replaced = b64.Replace('-', '_').Replace('+', '!').Replace('/', '\'').Replace('=', '(');// minus(-) => underscore(_), plus(+) => bang(!), forward slash => single quote ('), equals (=) => open paren (()
+            return replaced;
+        }
+
+        public static string SafeBase64Dencode(string b64) {
+            string replaced = b64.Replace('_', '-').Replace('!', '+').Replace('\'', '/').Replace('(', '=');// minus(-) => underscore(_), plus(+) => bang(!), forward slash => single quote ('), equals (=) => open paren (()
+            byte[] bytes = Convert.FromBase64String(replaced);
+            string text = Encoding.Unicode.GetString(bytes);
+            return text;
+        }
+
         public static string CreateConfirmKey(string text, string key) {
             // encrypt the key
             string encrypted = AESThenHMAC.SimpleEncryptWithPassword(text, key);
-
-            //Encode to base-64 for urls
-            string b64 = EncryptorService.Base64Encode(encrypted);
-
-            return b64;
+            //Encode to for urls
+            string b64safe = SafeBase64Encode(encrypted);
+            return b64safe;
         }
 
         public static string DecryptConfirmKey(string text, string key) {
-            // Decode from base-64 for Urls
-            string encrypted = EncryptorService.Base64Decode(text);
-
-            // Decrypt
-            string decrypted = AESThenHMAC.SimpleDecryptWithPassword(encrypted, key);
-
+            //Decode from b64 safe
+            string decoded = SafeBase64Dencode(text);
+            string decrypted = AESThenHMAC.SimpleDecryptWithPassword(decoded, key);
             return decrypted;
+        }
+
+        public static string ToHexString(string str) {
+            var sb = new StringBuilder();
+
+            var bytes = Encoding.Unicode.GetBytes(str);
+            foreach (var t in bytes) {
+                sb.Append(t.ToString("X2"));
+            }
+
+            return sb.ToString(); // returns: "48656C6C6F20776F726C64" for "Hello world"
+        }
+
+        public static string FromHexString(string hexString) {
+            var bytes = new byte[hexString.Length / 2];
+            for (var i = 0; i < bytes.Length; i++) {
+                bytes[i] = Convert.ToByte(hexString.Substring(i * 2, 2), 16);
+            }
+
+            return Encoding.Unicode.GetString(bytes); // returns: "Hello world" for "48656C6C6F20776F726C64"
         }
     }
 
