@@ -38,7 +38,7 @@ namespace Esk8Bst.Services {
                 return CompanyParser.ParseCompanies(comps);
             }
             catch (Exception e) {
-                Logger.Log($"An unknown error ocurred while deserializing the Common Companiwes json file:\n{e.Message}");
+                Logger.Log($"An unknown error ocurred while deserializing the Common Companies json file:\n{e.Message}");
                 return null;
             }
         }
@@ -58,7 +58,7 @@ namespace Esk8Bst.Services {
                 return products;
             }
             catch (Exception e) {
-                Logger.Log($"An unknown error ocurred while deserializing the Common Companiwes json file:\n{e.Message}");
+                Logger.Log($"An unknown error ocurred while deserializing the Common Companies json file:\n{e.Message}");
                 return null;
             }
         }
