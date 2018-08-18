@@ -37,7 +37,7 @@ namespace esk8bstlambda {
             var response = new APIGatewayProxyResponse {
                 StatusCode = (int)HttpStatusCode.OK,
                 Body = "Hello AWS Serverless",
-                Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } }
+                Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } },
             };
 
             logger.Log("A get request ocurred - usually this is the developer testing that the serverless suite still works.");
@@ -70,7 +70,7 @@ namespace esk8bstlambda {
 
             string postbody = request.Body;
             PostedSubscribeObject pso = null;
-            string encrypter = "";
+            string confirmkey = "";
             try {
                 JObject jobj = JObject.Parse(postbody);
                 pso = PostedSubscribeObject.FromJson(jobj);
@@ -78,35 +78,36 @@ namespace esk8bstlambda {
                 if (pso.Email.Contains("@") && pso.Matches.Count > 0) { // we can proceed
 
                     FirestoreService FSS = new FirestoreService(logger);
-                    if(await FSS.CheckIsPreconfirmed(pso.Email)) {
+                    if (await FSS.CheckIsPreconfirmed(pso.Email)) {
                         // Immediately subscribe the user, they've already been here.
                         await FSS.UpsertSubscriber(pso);
                         return new APIGatewayProxyResponse() {
                             StatusCode = (int)HttpStatusCode.Created,
+                            Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } },
                             Body = "Alright! You've been confirmed as interested in receiving updates from https://esk8bst.com",
                         };
                     }
 
                     string encryptionKey = Environment.GetEnvironmentVariable("ESK8BST_ENCRYPTION_KEY");
-                    encrypter = AESThenHMAC.SimpleEncryptWithPassword(postbody, encryptionKey);
+                    confirmkey = EncryptorService.CreateConfirmKey(pso.ToJson().ToString(), encryptionKey);
                 }
-
             } catch (Exception e) {
-                logger.Log("Tried to parse a malformed subscriber json");
+                logger.Log($"Tried to parse a malformed subscriber json: {e.Message}");
                 return new APIGatewayProxyResponse() {
                     StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } },
                     Body = "Failed to parse json properly",
                 };
             }
 
-            if (String.IsNullOrWhiteSpace(encrypter)) {
+            if (String.IsNullOrWhiteSpace(confirmkey)) {
                 return new APIGatewayProxyResponse() {
                     StatusCode = (int)HttpStatusCode.InternalServerError,
                     Body = "Failed to parse json properly - no email found",
+                    Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } },
                 };
             }
 
-            string b64 = EncryptorService.Base64Encode(encrypter);
             MailgunService MSS = new MailgunService(logger);
             MailgunEmail m = new MailgunEmail() {
                 To = new List<string> { pso.Email },
@@ -115,7 +116,7 @@ namespace esk8bstlambda {
                 Body = "" +
                 "Someone has registered you as being interested in receiving notifications about new electric skateboard postings from https://esk8bst.com.\n\n" +
                 "If this was you, please click the link below to confirm your email. If this was not you, or you no longer wish to receive emails from us, then ignore this message.\n\n" +
-                $"https://1lol87xzbj.execute-api.us-east-2.amazonaws.com/Prod/confirm?confirmkey={b64}",
+                $"https://1lol87xzbj.execute-api.us-east-2.amazonaws.com/Prod/confirm?confirmkey={confirmkey}",
             };
 
             bool success = await MSS.Send(m);
@@ -123,6 +124,7 @@ namespace esk8bstlambda {
                 return new APIGatewayProxyResponse() {
                     StatusCode = (int)HttpStatusCode.InternalServerError,
                     Body = "Failed to send email to recipent",
+                    Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } },
                 };
             }
 
@@ -130,7 +132,7 @@ namespace esk8bstlambda {
             var response = new APIGatewayProxyResponse {
                 StatusCode = (int)HttpStatusCode.OK,
                 Body = "An email has been sent to the address specified confirming your subscription",
-                Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } }
+                Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } },
             };
 
             return response;
@@ -149,18 +151,18 @@ namespace esk8bstlambda {
             if (request.QueryStringParameters.ContainsKey("confirmkey")) {
                 string encryptionkey = Environment.GetEnvironmentVariable("ESK8BST_ENCRYPTION_KEY");
                 string b64payload = request.QueryStringParameters["confirmkey"];
-                string encryptedpayload = EncryptorService.Base64Decode(b64payload);
                 logger.Log("Received this as the confirm key: " + request.QueryStringParameters["confirmkey"]);
-                string decrypted = AESThenHMAC.SimpleDecryptWithPassword(encryptedpayload, encryptionkey);
+                string decrypted = EncryptorService.DecryptConfirmKey(b64payload, encryptionkey);
                 PostedSubscribeObject pso = null;
                 try {
                     JObject jobj = JObject.Parse(decrypted);
                     pso = PostedSubscribeObject.FromJson(jobj);
                 } catch (Exception e) {
-                    logger.Log("Tried to parse malformed json and failed at Confirm Subscribe");
+                    logger.Log($"Tried to parse malformed json and failed at Confirm Subscribe: {e.Message}");
                     return new APIGatewayProxyResponse() {
                         StatusCode = (int)HttpStatusCode.InternalServerError,
                         Body = "Failed to parse json properly",
+                        Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } },
                     };
                 }
 
@@ -171,6 +173,7 @@ namespace esk8bstlambda {
                     return new APIGatewayProxyResponse() {
                         StatusCode = (int)HttpStatusCode.Created,
                         Body = "Alright! You've been confirmed as interested in receiving updates from https://esk8bst.com",
+                        Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } },
                     };
                 }
             }
@@ -178,6 +181,7 @@ namespace esk8bstlambda {
             return new APIGatewayProxyResponse() {
                 StatusCode = (int)HttpStatusCode.BadRequest,
                 Body = "Failed to properly parse the confirm link.",
+                Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } },
             };
         }
 
@@ -194,7 +198,8 @@ namespace esk8bstlambda {
             if (request.HttpMethod != HttpMethod.Get.Method) {
                 return new APIGatewayProxyResponse() {
                     StatusCode = (int)HttpStatusCode.MethodNotAllowed,
-                    Body = "This endpoint only responds to GET requests"
+                    Body = "This endpoint only responds to GET requests",
+                    Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } },
                 };
             }
 
@@ -209,18 +214,21 @@ namespace esk8bstlambda {
                         return new APIGatewayProxyResponse() {
                             StatusCode = (int)HttpStatusCode.BadRequest,
                             Body = "An email was not found in the confirmkey parameter",
+                            Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } },
                         };
                     }
                 } else {
                     return new APIGatewayProxyResponse() {
                         StatusCode = (int)HttpStatusCode.BadRequest,
                         Body = "Missing value for parameter `confirmkey`",
+                        Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } },
                     };
                 }
             } else {
                 return new APIGatewayProxyResponse() {
                     StatusCode = (int)HttpStatusCode.BadRequest,
                     Body = "Missing parameter `confirmkey`",
+                    Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } },
                 };
             }
             FirestoreService FSS = new FirestoreService(logger);
@@ -228,7 +236,8 @@ namespace esk8bstlambda {
 
             var response = new APIGatewayProxyResponse {
                 StatusCode = (int)HttpStatusCode.OK,
-                Body = "Ok! You've been unsubscribed and will no longer receive updates. If you change your mind, you can always sign up again at https://esk8bst.com"
+                Body = "Ok! You've been unsubscribed and will no longer receive updates. If you change your mind, you can always sign up again at https://esk8bst.com",
+                Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } },
             };
             return response;
         }

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Xunit;
 
 namespace Esk8Bst.Tests {
+
     public class MailgunTests {
         readonly LaunchSettingsFixture lf = new LaunchSettingsFixture();
         readonly ILogger logger = new TestLogger();
@@ -16,7 +17,6 @@ namespace Esk8Bst.Tests {
         public MailgunTests() {
 
         }
-
 
         [Fact]
         public async Task TestSendEmail() {

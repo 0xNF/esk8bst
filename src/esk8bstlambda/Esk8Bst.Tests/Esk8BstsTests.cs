@@ -53,34 +53,6 @@ namespace Esk8Bst.Tests {
 
         }
 
-        [Fact]
-        public void TestEncryption() {
-            string key = Environment.GetEnvironmentVariable("ESK8BST_ENCRYPTION_KEY");
-            string email = "nickflower@gmail.com";
-            string encrypted = AESThenHMAC.SimpleEncryptWithPassword(email, key);
-
-            Assert.NotEqual(encrypted, email);
-            string decrypted = AESThenHMAC.SimpleDecryptWithPassword(encrypted, key);
-            Assert.Equal(decrypted, email);
-
-            return;
-        }
-
-        [Fact]
-        public void TestOneWayHash() {
-            string x = "the quick brown fox jumped over the lazy dog";
-            string hash = EncryptorService.OneWayHash(x);
-            Assert.Equal(" ��-��efeX(�g�\u0016���;ž@Ibt�͵�&5�", hash);
-        }
-
-        [Fact]
-        public void TestPayloadDescryption() {
-            string key = "Xley2zWu52Dv5lhnhlAm97GQf01p3v3Knzhwf0QbTZRYlhrrJTZJaM2iZzMD6p5";
-            string encrypted = "joXgj8J6MML+2/PZ7Avj0jO7To7XD7Rfrji0vcaRI9UpO8aCF8iTRnFOiFNBjx8gvRwDzt6i72lHhOQ/nI4XE/xPYlII+cJDyb8gMtzrw9pov4gNjQBWt/AnHM2Itla0ZsRxL82qfHhj3/PvTaKeSa2hrnV21eo//y5aX7QQEuj0nGA+708JXSzzH/2qXSQu";
-            string decrypted = AESThenHMAC.SimpleDecryptWithPassword(encrypted, key);
-            JObject j = JObject.Parse(decrypted);
-            PostedSubscribeObject pso = PostedSubscribeObject.FromJson(j);
-        }
         
         [Fact]
         public async Task TestParseCompanies() {

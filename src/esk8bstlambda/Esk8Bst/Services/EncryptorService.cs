@@ -26,6 +26,26 @@ namespace Esk8Bst.Services {
             byte[] hashedbytes = x.ComputeHash(bytes);
             return Encoding.UTF8.GetString(hashedbytes);
         }
+
+        public static string CreateConfirmKey(string text, string key) {
+            // encrypt the key
+            string encrypted = AESThenHMAC.SimpleEncryptWithPassword(text, key);
+
+            //Encode to base-64 for urls
+            string b64 = EncryptorService.Base64Encode(encrypted);
+
+            return b64;
+        }
+
+        public static string DecryptConfirmKey(string text, string key) {
+            // Decode from base-64 for Urls
+            string encrypted = EncryptorService.Base64Decode(text);
+
+            // Decrypt
+            string decrypted = AESThenHMAC.SimpleDecryptWithPassword(encrypted, key);
+
+            return decrypted;
+        }
     }
 
     
