@@ -7,7 +7,6 @@ Future updates are likely to include stats on the number of boards available, as
 
 The site is all in-browser and doesn't require a back-end server. Reddit's API is used to collect thread information when you load the page.
 
-
 This is a project built with TypeScript 3 and React. Shout out to Microsoft's [TypeScript-React Starter](https://github.com/Microsoft/TypeScript-React-Starter) for making it easy to get started with TypeScript.
 
 # Building
