@@ -30,12 +30,12 @@ namespace Esk8Bst.Services {
         public static string SafeBase64Encode(string text) {
             byte[] bytes = Encoding.Unicode.GetBytes(text);
             string b64 = Convert.ToBase64String(bytes);
-            string replaced = b64.Replace('-', '_').Replace('+', '!').Replace('/', '\'').Replace('=', '(');// minus(-) => underscore(_), plus(+) => bang(!), forward slash => single quote ('), equals (=) => open paren (()
+            string replaced = b64.Replace('-', '_').Replace('+', '!').Replace('/', '\'').Replace('=', '*');// minus(-) => underscore(_), plus(+) => bang(!), forward slash => single quote ('), equals (=) => open paren (()
             return replaced;
         }
 
         public static string SafeBase64Dencode(string b64) {
-            string replaced = b64.Replace('_', '-').Replace('!', '+').Replace('\'', '/').Replace('(', '=');// minus(-) => underscore(_), plus(+) => bang(!), forward slash => single quote ('), equals (=) => open paren (()
+            string replaced = b64.Replace('_', '-').Replace('!', '+').Replace('\'', '/').Replace('*', '=');// minus(-) => underscore(_), plus(+) => bang(!), forward slash => single quote ('), equals (=) => open paren (()
             byte[] bytes = Convert.FromBase64String(replaced);
             string text = Encoding.Unicode.GetString(bytes);
             return text;
