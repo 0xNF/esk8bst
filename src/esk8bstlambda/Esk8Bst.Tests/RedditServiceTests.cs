@@ -20,6 +20,36 @@ namespace Esk8Bst.Tests {
 
         }
 
+        [Fact]
+        public async Task TestLiveScan() {
+            RedditService RSS = new RedditService(logger);
+            Esk8Service ESS = new Esk8Service(logger);
+            /* Get the BST Thread */
+            if (!(await RSS.GetRedditItem() is JObject frontPage)) {
+                /* Some kind of error ocurred, do not update */
+                return;
+            }
+            string BSTUrl = RSS.FindBSTThreadUrl(frontPage);
+            if (String.IsNullOrWhiteSpace(BSTUrl)) {
+                /* Some kind of error ocurred, do not update */
+                return;
+            }
+            if (!(await RSS.GetRedditItem(BSTUrl) is JArray BSTPage)) {
+                /* Some kind of error ocurred, do not update */
+                return;
+            }
+
+            List<Product> prods = await ESS.GetCommonBoards();
+            List<Company> comps = await ESS.GetCommonCompanies();
+            comps = CompanyParser.CombineCompanyLists(comps, prods.Select(x => x.Company));
+
+            List<RegexCategory<Company>> CompRs = ESS.GetCompanyRegexs(comps);
+            List<RegexCategory<Product>> ProdRs = ESS.GetProductRegexs(prods);
+
+            /* Parse the full thread for new posts */
+            List<BSTComment> comments = RSS.ParseComments(BSTPage, CompRs, ProdRs, DateTimeOffset.MinValue);
+        }
+
 
         [Fact]
         public async Task TestParseFrontPage() {
@@ -33,6 +63,7 @@ namespace Esk8Bst.Tests {
         [Fact]
         public async Task TestParseBSTThread() {
             string s = await File.ReadAllTextAsync("resources/bstthread.json");
+            RedditService rss = new RedditService(logger);
             JArray BSTThreadJson = JArray.Parse(s);
             RedditService RSS = new RedditService(logger);
             

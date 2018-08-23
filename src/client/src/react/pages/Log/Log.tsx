@@ -21,6 +21,12 @@ function Log(props: LogProps) {
 
         <div className="AboutZone">
 
+            <h3> 8/23/2018 </h3>
+            <ul>
+                <li>Fixed a bug where malformed comments would break the parsing engine and cause nothing to render</li>
+            </ul>
+            
+
             <h3> 8/16/2018 </h3>
             <ul>
                 <li>Added Email Notification. Click on the 'Get Notified of Updates' button the main page to get started.</li>

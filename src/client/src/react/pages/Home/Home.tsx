@@ -69,9 +69,12 @@ async function Load(): Promise<IBSTThread | IBSTError> {
     }
     const bstRaw : IRedditData | IBSTError = await GetBuySellTradeThreadData(forumstring as string); 
     if("Code" in bstRaw) {
+      console.log("Encountered an error");
+      console.log(bstRaw);
       return bstRaw;
     }
     var y = ParseData(bstRaw, companies, boards);
+    console.log(y);
     return y;
   } catch (e) {
     return DefautThread;

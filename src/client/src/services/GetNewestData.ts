@@ -14,7 +14,7 @@ function GetBuySellTradeThreadData(threadurl: string) : Promise<IRedditData | IB
         .then(response => {
         if (!response.ok) {
             // TODO make actual IBSTError here
-            throw new Error(response.statusText)
+            throw new Error(response.statusText);
         }
         return response.json()
         }).catch((e: Error) => {
@@ -197,39 +197,51 @@ function _ParseBSTComments(jobj: IRedditData) : Array<IBSTThreadComment> {
     const tcom : any = jobj[1]["data"]["children"];
     const comments: Array<IBSTThreadComment> = [];
     for(let i = 0; i < tcom.length; i++) {
-        const com = tcom[i]["data"];
-        const author = com["author"];
-        const posted = new Date(com["created_utc"] * 1000);
-        const url = "https://reddit.com" + com["permalink"];
-        const bst: BuySellTrade = _parseBuySellTradeType(com["body"]);
-        const tstatus: TransactionStatus = _parseTransactionStatus(com["body"]);
-        const replycount = _parseReplyCount(com);
-        const priceAndCurr =  _parcePriceAndCurrency(com["body"]);
-        let company = _parseCompany(com["body"], Companies);
-        const productTuple = _parseProduct(com["body"], Boards);
-        company = productTuple[0] === "?" ? company : productTuple[0];
-        const product = productTuple[1];
-        
-        const comment : IBSTThreadComment = {
-            Seller: author,
-            DatePosted: posted,
-            Url: url,
-            NumberOfReplies: replycount,
-            Text: com["body"],
-            Currency: priceAndCurr[0],
-            Price: priceAndCurr[1],
-            Location: "",
-            BST: bst,
-            TransactionStatus: tstatus,
-            Company: company,
-            Product: product,
-        };
+        try {
+            const com = tcom[i]["data"];
+            const body = com["body"];
+            const author = com["author"];
+            const created_utc = com["created_utc"];
+            const perma = com["permalink"];
+            if(!com || !body || !author || !created_utc || !perma) {
+                console.log("encountered a malformed comment at index " + i );
+                continue;
+            }
+            const posted = new Date(created_utc * 1000);
+            const url = "https://reddit.com" + perma;
+            const bst: BuySellTrade = _parseBuySellTradeType(body);
+            const tstatus: TransactionStatus = _parseTransactionStatus(body);
+            const replycount = _parseReplyCount(com);
+            const priceAndCurr =  _parcePriceAndCurrency(body);
+            let company = _parseCompany(body, Companies);
+            const productTuple = _parseProduct(body, Boards);
+            company = productTuple[0] === "?" ? company : productTuple[0];
+            const product = productTuple[1];
+            
+            const comment : IBSTThreadComment = {
+                Seller: author,
+                DatePosted: posted,
+                Url: url,
+                NumberOfReplies: replycount,
+                Text: body,
+                Currency: priceAndCurr[0],
+                Price: priceAndCurr[1],
+                Location: "",
+                BST: bst,
+                TransactionStatus: tstatus,
+                Company: company,
+                Product: product,
+            };
 
-        if(comment.BST !== "NULL") {
-            comments.push(comment);
+            if(comment.BST !== "NULL") { 
+                comments.push(comment);
+            } 
+        } catch(e) {
+            console.log("an error happened at index: " + i);
+            console.log(e);
         }
+        
     }
-
     return comments;
 }
 

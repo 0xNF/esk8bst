@@ -264,17 +264,20 @@ namespace Esk8Bst.Services {
             try {
                 JArray jarr = BstThread[1]["data"]["children"] as JArray;
                 foreach (JObject jobj in jarr) {
-                    JObject commentObj = jobj.GetValue("data") as JObject;
-                    DateTimeOffset createdAt = DateTimeOffset.FromUnixTimeSeconds((long)commentObj["created_utc"]);
-                    if (createdAt <= until) {
-                        // Only scan until we reach something we've seen before.
-                        break;
+                    try {
+                        JObject commentObj = jobj.GetValue("data") as JObject;
+                        DateTimeOffset createdAt = DateTimeOffset.FromUnixTimeSeconds((long)commentObj["created_utc"]);
+                        if (createdAt <= until) {
+                            // Only scan until we reach something we've seen before.
+                            break;
+                        }
+                        BSTComment comment = MakeComment(commentObj, companies, products);
+                        if (comment != null) {
+                            comments.Add(comment);
+                        }
+                    } catch (Exception e) {
+                        Logger.Log($"Parser failed while looking at the comments of a BST thread, likely a key wasn't present: {e.Message}. Ignoring this index and searching for others.");
                     }
-                    BSTComment comment = MakeComment(commentObj, companies, products);
-                    if (comment != null) {
-                        comments.Add(comment);
-                    }
-
                 }
             }
             catch (Exception e) {
