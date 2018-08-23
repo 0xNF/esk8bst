@@ -47,7 +47,7 @@ namespace Esk8Bst.Tests {
             List<RegexCategory<Product>> ProdRs = ESS.GetProductRegexs(prods);
 
             /* Parse the full thread for new posts */
-            List<BSTComment> comments = RSS.ParseComments(BSTPage, CompRs, ProdRs, DateTimeOffset.MinValue);
+           List<BSTComment> comments = RSS.ParseComments(BSTPage, CompRs, ProdRs, DateTimeOffset.MinValue);
         }
 
 
