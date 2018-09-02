@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <AssemblyName>esk8bstlambda</AssemblyName>
+    <AssemblyName>esk8bstlambda.Tests</AssemblyName>
     <RootNamespace>esk8bstlambda.Tests</RootNamespace>
   </PropertyGroup>
 
